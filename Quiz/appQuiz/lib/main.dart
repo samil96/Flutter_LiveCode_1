@@ -1,8 +1,11 @@
+import 'package:appQuiz/quiz-brain.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(MyApp());
 }
+
+QuizBrain quizBrain = QuizBrain();
 
 class MyApp extends StatelessWidget {
   @override
@@ -24,34 +27,25 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<Icon> scoreKeeper = [
-    Icon(
-      Icons.check,
-      color: Colors.green,
-    ),
-    Icon(
-      Icons.close,
-      color: Colors.red,
-    ),
-  ];
+  List<Icon> scoreKeeper = [];
 
-  List<String> question = [
-    "Amo los helados",
-    "Me gusta los libros de acción",
-    "Me gustal el ceviche",
-    "Amo mi carrera",
-    "Soy feliz",
-  ];
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getQuestionAnswer();
+    if (correctAnswer == userPickedAnswer) {
+      scoreKeeper.add(Icon(
+        Icons.check,
+        color: Colors.greenAccent,
+      ));
+    } else {
+      scoreKeeper.add(Icon(
+        Icons.close,
+        color: Colors.redAccent,
+      ));
+    }
 
-  int questionNumber = 0;
-
-  List<bool> answers = [
-    true,
-    false,
-    false,
-    true,
-    true,
-  ];
+    quizBrain.nextQuestion();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +56,7 @@ class _QuizPageState extends State<QuizPage> {
         Expanded(
           flex: 5,
           child: Center(
-            child: Text(question[questionNumber],
+            child: Text(quizBrain.getQuestionText(),
                 style: TextStyle(
                   color: Color(0xff8869A5),
                   fontWeight: FontWeight.bold,
@@ -74,19 +68,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: FlatButton(
               onPressed: () {
-                bool correctAnswer = answers[questionNumber];
-
-                if (correctAnswer == true) {
-                  print("correcto");
-                } else {
-                  print("Incorrecto");
-                }
-
-                scoreKeeper.add(
-                  Icon(Icons.check, color: Colors.green),
-                );
-                questionNumber++;
-                setState(() {});
+                checkAnswer(true);
               },
               child: Text("Verdadero"),
               color: Color(0xffC58ADE),
@@ -98,13 +80,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: FlatButton(
               onPressed: () {
-                scoreKeeper.add(Icon(
-                  Icons.close,
-                  color: Colors.redAccent,
-                ));
-
-                questionNumber++;
-                setState(() {});
+                checkAnswer(false);
               },
               child: Text("Falso"),
               color: Color(0xff8095CE),
